@@ -17,4 +17,5 @@ RUN pip install --upgrade pip && \
 COPY . .
 
 # Выполняем миграции и запускаем gunicorn
+# CMD ["sh", "-c", "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn video_viewer.wsgi:application --bind 0.0.0.0:8000"]
 CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn video_viewer.wsgi:application --bind 0.0.0.0:8000"]
