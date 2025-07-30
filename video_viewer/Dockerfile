@@ -3,19 +3,16 @@ FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем requirements.txt
+# Копируем и устанавливаем зависимости
 COPY requirements.txt .
+RUN apt-get update && apt-get install -y netcat-openbsd
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Устанавливаем зависимости
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
 
-# Копируем все файлы проекта в контейнер
+# Копируем весь проект (включая entrypoint.sh)
 COPY . .
 
-# Выполняем миграции и запускаем gunicorn
-# CMD ["sh", "-c", "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn video_viewer.wsgi:application --bind 0.0.0.0:8000"]
-CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn video_viewer.wsgi:application --bind 0.0.0.0:8000"]
+# Делаем скрипт исполняемым
+RUN chmod +x entrypoint.sh
